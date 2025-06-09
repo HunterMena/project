@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Stock Trading App</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/trading.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Stock Trading Dashboard</h1>
+        <nav>
+            <ul>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="portfolio.html">Portfolio</a></li>
+                <li><a href="stocks.html">Stocks</a></li>
+                <li><a href="transactions.html">Transactions</a></li>
+            </ul>
+            <!-- Add user controls -->
+            <div class="user-controls">
+                <span id="userEmail"></span>
+                <button id="logoutBtn" class="button">Logout</button>
+            </div>
+        </nav>
+    </header>
+
+    <div class="portfolio-summary">
+        <div class="summary-card">
+            <h3>Portfolio Value</h3>
+            <div class="value">$10,000</div>
+        </div>
+        <div class="summary-card">
+            <h3>Today's Change</h3>
+            <div class="value price-up">+$150</div>
+        </div>
+        <div class="summary-card">
+            <h3>Available Cash</h3>
+            <div class="value">$5,000</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Top Movers and Losers</h2>
+        <div class="trading-chart">
+            <canvas id="moversChart"></canvas>
+        </div>
+
+        <div class="stock-tables">
+            <div class="table-container">
+                <h3>Top 5 Movers</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Stock</th>
+                            <th>Price</th>
+                            <th>Change (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="moversTable"></tbody>
+                </table>
+            </div>
+
+            <div class="table-container">
+                <h3>Top 5 Losers</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Stock</th>
+                            <th>Price</th>
+                            <th>Change (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="losersTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Stock Trading App</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Hard-coded stock data
+            const topMovers = [
+                { symbol: 'AMZN', close: 125.50, change: 2.15 },
+                { symbol: 'GOOGL', close: 2800.75, change: 1.85 },
+                { symbol: 'TSLA', close: 750.30, change: 1.50 },
+                { symbol: 'MSFT', close: 310.20, change: 1.25 },
+                { symbol: 'AAPL', close: 150.00, change: 0.95 }
+            ];
+    
+            const topLosers = [
+                { symbol: 'NFLX', close: 450.25, change: -1.10 },
+                { symbol: 'V', close: 220.50, change: -0.85 },
+                { symbol: 'DIS', close: 100.75, change: -0.75 },
+                { symbol: 'PG', close: 145.30, change: -0.50 },
+                { symbol: 'NKE', close: 120.00, change: -0.25 }
+            ];
+    
+            // Populate Top Movers table
+            const moversTable = document.getElementById('moversTable');
+            moversTable.innerHTML = '';
+            topMovers.forEach(stock => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${stock.symbol}</td>
+                    <td>$${stock.close.toFixed(2)}</td>
+                    <td class="price-up">+${stock.change.toFixed(2)}%</td>
+                `;
+                moversTable.appendChild(row);
+            });
+    
+            // Populate Top Losers table
+            const losersTable = document.getElementById('losersTable');
+            losersTable.innerHTML = '';
+            topLosers.forEach(stock => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${stock.symbol}</td>
+                    <td>$${stock.close.toFixed(2)}</td>
+                    <td class="price-down">${stock.change.toFixed(2)}%</td>
+                `;
+                losersTable.appendChild(row);
+            });
+    
+            // Separate labels for movers and losers
+            const moversLabels = topMovers.map(stock => stock.symbol);
+            const losersLabels = topLosers.map(stock => stock.symbol);
+    
+            const chartData = {
+                labels: [...moversLabels, ...losersLabels],
+                datasets: [
+                    {
+                        label: 'Top Movers',
+                        data: [...topMovers.map(stock => stock.change), ...Array(topLosers.length).fill(null)],
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Top Losers',
+                        data: [...Array(topMovers.length).fill(null), ...topLosers.map(stock => stock.change)],
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            };
+    
+            const ctx = document.getElementById('moversChart');
+            if (ctx) {
+                new Chart(ctx.getContext('2d'), {
+                    type: 'bar',
+                    data: chartData,
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Top Movers and Losers'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            } else {
+                console.error('Chart element not found.');
+            }
+        });
+    </script>
+</body>
+</html>

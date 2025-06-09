@@ -2,17 +2,31 @@
   "name": "stock-trading-app",
   "version": "1.0.0",
   "description": "A web application for simulating stock trading with fake money.",
-  "main": "src/index.html",
+  "main": "public/index.html",
   "scripts": {
-    "start": "live-server src",
-    "build": "echo 'Build step not defined yet.'"
+    "start": "firebase serve --only hosting",
+    "dev": "live-server public",
+    "deploy": "firebase deploy"
   },
   "dependencies": {
-    "axios": "^0.21.1"
+    "axios": "^0.21.1",
+    "dotenv": "^16.5.0",
+    "firebase": "^11.9.0",
+    "webpack": "^5.99.9",
+    "webpack-cli": "^6.0.1"
   },
   "devDependencies": {
     "live-server": "^1.2.1"
   },
   "author": "Your Name",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HunterMena/project.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/HunterMena/project/issues"
+  },
+  "homepage": "https://github.com/HunterMena/project#readme"
 }

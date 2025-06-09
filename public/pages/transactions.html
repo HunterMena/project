@@ -17,6 +17,10 @@
                 <li><a href="stocks.html">Stocks</a></li>
                 <li><a href="transactions.html">Transactions</a></li>
             </ul>
+            <div class="user-controls">
+                <span id="userEmail"></span>
+                <button id="logoutBtn" class="button">Logout</button>
+            </div>
         </nav>
     </header>
 
@@ -56,6 +60,30 @@
                     <td>$150.25</td>
                     <td>$1,502.50</td>
                 </tr>
+                <tr>
+                    <td>2025-06-08</td>
+                    <td>Sell</td>
+                    <td>TSLA</td>
+                    <td>5</td>
+                    <td>$245.30</td>
+                    <td>$1,226.50</td>
+                </tr>
+                <tr>
+                    <td>2025-06-07</td>
+                    <td>Buy</td>
+                    <td>GOOGL</td>
+                    <td>3</td>
+                    <td>$2,780.00</td>
+                    <td>$8,340.00</td>
+                </tr>
+                <tr>
+                    <td>2025-06-07</td>
+                    <td>Buy</td>
+                    <td>MSFT</td>
+                    <td>8</td>
+                    <td>$335.75</td>
+                    <td>$2,686.00</td>
+                </tr>
                 <!-- More transactions will be added dynamically -->
             </tbody>
         </table>
@@ -67,5 +95,7 @@
 
     <script src="../assets/js/api.js"></script>
     <script src="../assets/js/transactions.js"></script>
+    <script type="module" src="../assets/js/firebase-config.js"></script>
+    <script type="module" src="../assets/js/auth.js"></script>
 </body>
 </html>

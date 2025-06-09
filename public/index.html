@@ -2,10 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Stock Trading App</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/trading.css">
+
+    <!-- Firebase SDK -->
+    <script defer src="/__/firebase/11.9.0/firebase-app-compat.js"></script>
+    <script defer src="/__/firebase/11.9.0/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/11.9.0/firebase-firestore-compat.js"></script>
+    <script defer src="/__/firebase/11.9.0/firebase-analytics-compat.js"></script>
+    <script defer src="/__/firebase/init.js?useEmulator=false"></script>
 </head>
 <body>
     <header>
@@ -24,11 +31,12 @@
         <p>Use fake money to trade stocks and track your transactions!</p>
     </main>
     <footer>
-        <p>&copy; 2023 Stock Trading App</p>
     </footer>
-    <script src="assets/js/api.js"></script>
-    <script src="assets/js/portfolio.js"></script>
-    <script src="assets/js/stocks.js"></script>
-    <script src="assets/js/transactions.js"></script>
+
+    <script src="assets/js/firebase-config.js"></script>
+    <script type="module" src="assets/js/auth.js"></script>
+    <script>
+        window.location.href = 'login.html';
+    </script>
 </body>
 </html>

@@ -20,6 +20,13 @@ header {
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+}
+
 nav ul {
     display: flex;
     justify-content: center;
@@ -42,6 +49,32 @@ nav ul li a {
 
 nav ul li a:hover {
     background: rgba(255,255,255,0.1);
+}
+
+.user-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-left: auto;
+}
+
+#userEmail {
+    color: white;
+    margin-right: 1rem;
+}
+
+#logoutBtn {
+    background: transparent;
+    color: white;
+    border: 1px solid white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#logoutBtn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Main Content Styles */
@@ -117,6 +150,40 @@ nav ul li a:hover {
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
+/* Login Styles */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a237e, #0d47a1);
+}
+
+.login-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
 /* Footer Styles */
 footer {
     background: #1a237e;
@@ -124,4 +191,40 @@ footer {
     text-align: center;
     padding: 1.5rem 0;
     margin-top: 2rem;
+}
+
+/* Update trading chart styles */
+.trading-chart {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: auto; /* Remove fixed height to prevent stretching */
+    padding: 2rem 0; /* Add padding for spacing */
+}
+
+#moversChart {
+    max-width: 600px; /* Set a maximum width for the chart */
+    max-height: 400px; /* Set a maximum height for the chart */
+    width: 100%; /* Ensure it scales responsively */
+    height: auto; /* Maintain aspect ratio */
+}
+
+.search-container {
+    margin-bottom: 2rem;
+}
+
+#stockSearch {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+#stockSearch:focus {
+    outline: none;
+    border-color: #1a237e;
+    box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.2);
 }

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio - Stock Trading App</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Center text in tables */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .table th, .table td {
+            text-align: center; /* Center text in table cells */
+            padding: 10px;
+            border: 1px solid #dedede;
+        }
+
+        .table th {
+            background-color: #007bff; /* Blue header row */
+            color: white; /* White text for contrast */
+            font-weight: bold;
+        }
+
+        .portfolio-summary, .line-graph, .table {
+            margin-bottom: 30px; /* Add spacing between sections */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Your Portfolio</h1>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="portfolio.html">Portfolio</a></li>
+                <li><a href="stocks.html">Stocks</a></li>
+                <li><a href="transactions.html">Transactions</a></li>
+            </ul>
+            <!-- Add user controls -->
+            <div class="user-controls">
+                <span id="userEmail"></span>
+                <button id="logoutBtn" class="button">Logout</button>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Portfolio Summary -->
+        <div class="portfolio-summary">
+            <h2>Portfolio Summary</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Total Stocks</th>
+                        <th>Total Shares</th>
+                        <th>Total Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>5</td> <!-- Total number of stocks -->
+                        <td>73</td> <!-- Total shares owned -->
+                        <td>$68,153.75</td> <!-- Total portfolio value -->
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Stock Price Graph -->
+        <div class="line-graph">
+            <h2>Stock Price Trends (Bar Graph)</h2>
+            <canvas id="lineChart"></canvas>
+        </div>
+
+        <!-- Stock Data Table -->
+        <h2>Your Holdings</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Stock</th>
+                    <th>Shares</th>
+                    <th>Avg Price</th>
+                    <th>Current Price</th>
+                    <th>Profit/Loss</th>
+                </tr>
+            </thead>
+            <tbody id="holdings-table">
+                <tr>
+                    <td>AAPL</td>
+                    <td>15</td>
+                    <td>$145.00</td>
+                    <td>$150.25</td>
+                    <td class="price-up">+$78.75</td>
+                </tr>
+                <tr>
+                    <td>GOOGL</td>
+                    <td>10</td>
+                    <td>$2,800.00</td>
+                    <td>$2,950.00</td>
+                    <td class="price-up">+$1,500.00</td>
+                </tr>
+                <tr>
+                    <td>AMZN</td>
+                    <td>8</td>
+                    <td>$3,200.00</td>
+                    <td>$3,150.00</td>
+                    <td class="price-down">-$400.00</td>
+                </tr>
+                <tr>
+                    <td>MSFT</td>
+                    <td>20</td>
+                    <td>$300.00</td>
+                    <td>$310.00</td>
+                    <td class="price-up">+$200.00</td>
+                </tr>
+                <tr>
+                    <td>C</td>
+                    <td>20</td>
+                    <td>$50.00</td>
+                    <td>$52.00</td>
+                    <td class="price-up">+$40.00</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Stock Trading App</p>
+    </footer>
+
+    <script>
+        // Dummy data for the bar graph
+        const labels = ['AAPL', 'GOOGL', 'AMZN', 'MSFT', 'C'];
+        const data = [150.25, 2950.00, 3150.00, 310.00, 52.00];
+
+        // Create the bar graph
+        const ctx = document.getElementById('lineChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar', // Bar graph for stock prices
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Stock Prices ($)',
+                    data: data,
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 99, 132, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 99, 132, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Stock Price Trends (Bar Graph)'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
