@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/trading.css">
+    <title>Portfolio</title>
+</head>
+<body>
+    <header>
+        <h1>Your Portfolio</h1>
+    </header>
+    <main>
+        <section id="portfolio">
+            <h2>Current Holdings</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Stock</th>
+                        <th>Quantity</th>
+                        <th>Current Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Portfolio items will be dynamically inserted here -->
+                </tbody>
+            </table>
+            <div id="total-value">
+                <h3>Total Portfolio Value: $<span id="total-amount">0.00</span></h3>
+            </div>
+        </section>
+    </main>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/portfolio.js"></script>
+</body>
+</html>

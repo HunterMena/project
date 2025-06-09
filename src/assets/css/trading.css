@@ -1,0 +1,42 @@
+/* trading.css */
+
+/* Styles for trading buttons */
+.trade-button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.trade-button:hover {
+    background-color: #45a049;
+}
+
+/* Styles for trading tables */
+.trading-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.trading-table th, .trading-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.trading-table th {
+    background-color: #f2f2f2;
+    text-align: left;
+}
+
+.trading-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Additional styles for trading features can be added here */
