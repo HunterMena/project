@@ -6,6 +6,7 @@
     <title>Portfolio - Stock Trading App</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/trading.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <header>
@@ -39,6 +40,26 @@
         <div class="trading-chart">
             <!-- this is the graph of OWNED stocks -->
             <!-- Portfolio performance chart will be inserted here via JavaScript -->
+            <canvas id="testChart"></canvas>
+            <script>
+                const ctx = document.getElementById('testChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Test1', 'Test2'],
+                        datasets: [{
+                            label: 'Test Data',
+                            data: [10, 20],
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true
+                    }
+                });
+            </script>
         </div>
 
         <h2>Your Holdings</h2>
@@ -106,6 +127,7 @@
         <p>&copy; 2025 Stock Trading App</p>
     </footer>
 
+    
     <script src="../assets/js/api.js"></script>
     <script src="../assets/js/portfolio.js"></script>
     <script src="../assets/js/stocks.js"></script>
