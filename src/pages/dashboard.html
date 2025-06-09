@@ -78,110 +78,76 @@
     </footer>
 
     <script>
-        async function fetchStockData() {
-            const apiKey = '2a8fbbbc35a749d9930a3c43ff553bc0';
-            const symbols = ['AAPL', 'GOOGL', 'MSFT', 'TSLA', 'AMZN', 'NFLX', 'V', 'AAPL']; // Removed FB
-            const url = `https://api.twelvedata.com/time_series?symbol=${symbols.join(',')}&interval=1day&apikey=${apiKey}`;
+        document.addEventListener('DOMContentLoaded', () => {
+            // Hard-coded stock data
+            const topMovers = [
+                { symbol: 'AMZN', close: 125.50, change: 2.15 },
+                { symbol: 'GOOGL', close: 2800.75, change: 1.85 },
+                { symbol: 'TSLA', close: 750.30, change: 1.50 },
+                { symbol: 'MSFT', close: 310.20, change: 1.25 },
+                { symbol: 'AAPL', close: 150.00, change: 0.95 }
+            ];
     
-            try {
-                console.log(`Fetching data for symbols: ${symbols.join(',')}`);
-                const response = await fetch(url);
-                if (response.status === 429) {
-                    console.warn('Rate limit exceeded. Waiting for 60 seconds...');
-                    await new Promise(resolve => setTimeout(resolve, 60000)); // Wait 60 seconds
-                    return fetchStockData(); // Retry the request
-                }
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                const data = await response.json();
+            const topLosers = [
+                { symbol: 'NFLX', close: 450.25, change: -1.10 },
+                { symbol: 'V', close: 220.50, change: -0.85 },
+                { symbol: 'DIS', close: 100.75, change: -0.75 },
+                { symbol: 'PG', close: 145.30, change: -0.50 },
+                { symbol: 'NKE', close: 120.00, change: -0.25 }
+            ];
     
-                console.log('API Response:', data);
+            // Populate Top Movers table
+            const moversTable = document.getElementById('moversTable');
+            moversTable.innerHTML = '';
+            topMovers.forEach(stock => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${stock.symbol}</td>
+                    <td>$${stock.close.toFixed(2)}</td>
+                    <td class="price-up">+${stock.change.toFixed(2)}%</td>
+                `;
+                moversTable.appendChild(row);
+            });
     
-                if (!data || Object.keys(data).length === 0) {
-                    console.warn('No data available from the API.');
-                    document.getElementById('moversTable').innerHTML = '<tr><td colspan="3">No data available</td></tr>';
-                    document.getElementById('losersTable').innerHTML = '<tr><td colspan="3">No data available</td></tr>';
-                    return;
-                }
+            // Populate Top Losers table
+            const losersTable = document.getElementById('losersTable');
+            losersTable.innerHTML = '';
+            topLosers.forEach(stock => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${stock.symbol}</td>
+                    <td>$${stock.close.toFixed(2)}</td>
+                    <td class="price-down">${stock.change.toFixed(2)}%</td>
+                `;
+                losersTable.appendChild(row);
+            });
     
-                // Process the data
-                const stocks = Object.keys(data).map(symbol => {
-                    const stockData = data[symbol];
-                    if (!stockData || stockData.status !== "ok") {
-                        console.warn(`Invalid or missing data for symbol: ${symbol}`, stockData);
-                        return null;
+            // Separate labels for movers and losers
+            const moversLabels = topMovers.map(stock => stock.symbol);
+            const losersLabels = topLosers.map(stock => stock.symbol);
+    
+            const chartData = {
+                labels: [...moversLabels, ...losersLabels],
+                datasets: [
+                    {
+                        label: 'Top Movers',
+                        data: [...topMovers.map(stock => stock.change), ...Array(topLosers.length).fill(null)],
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Top Losers',
+                        data: [...Array(topMovers.length).fill(null), ...topLosers.map(stock => stock.change)],
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
                     }
-                    if (!stockData.values || stockData.values.length < 2) {
-                        console.warn(`Not enough data for symbol: ${symbol}`);
-                        return null;
-                    }
-                    const latestClose = parseFloat(stockData.values[0].close);
-                    const previousClose = parseFloat(stockData.values[1].close);
-                    if (isNaN(latestClose) || isNaN(previousClose)) {
-                        console.warn(`Invalid close prices for symbol: ${symbol}`);
-                        return null;
-                    }
-                    const change = ((latestClose - previousClose) / previousClose) * 100;
-                    return {
-                        symbol,
-                        close: latestClose,
-                        change
-                    };
-                }).filter(stock => stock !== null);
+                ]
+            };
     
-                if (stocks.length === 0) {
-                    console.warn('No valid stock data after processing.');
-                    document.getElementById('moversTable').innerHTML = '<tr><td colspan="3">No data available</td></tr>';
-                    document.getElementById('losersTable').innerHTML = '<tr><td colspan="3">No data available</td></tr>';
-                    return;
-                }
-    
-                // Separate stocks into gainers and losers
-                const gainers = stocks.filter(stock => stock.change > 0).sort((a, b) => b.change - a.change);
-                const losers = stocks.filter(stock => stock.change < 0).sort((a, b) => a.change - b.change);
-    
-                const topMovers = gainers.slice(0, 5);
-                const topLosers = losers.slice(0, 5);
-    
-                console.log('Top Movers:', topMovers);
-                console.log('Top Losers:', topLosers);
-    
-                // Update the chart
-                const labels = [...topMovers.map(stock => stock.symbol), ...topLosers.map(stock => stock.symbol)];
-                const moversData = topMovers.map(stock => stock.change);
-                const losersData = topLosers.map(stock => stock.change);
-    
-                // Debugging chart data
-                console.log('Chart Labels:', labels);
-                console.log('Movers Data:', moversData);
-                console.log('Losers Data:', losersData);
-    
-                const chartData = {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Top Movers',
-                            data: moversData,
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Top Losers',
-                            data: losersData,
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            borderWidth: 1
-                        }
-                    ]
-                };
-    
-                const ctx = document.getElementById('moversChart');
-                if (!ctx) {
-                    console.error('Chart element not found.');
-                    return;
-                }
+            const ctx = document.getElementById('moversChart');
+            if (ctx) {
                 new Chart(ctx.getContext('2d'), {
                     type: 'bar',
                     data: chartData,
@@ -203,41 +169,10 @@
                         }
                     }
                 });
-    
-                // Update the tables
-                const moversTable = document.getElementById('moversTable');
-                const losersTable = document.getElementById('losersTable');
-    
-                moversTable.innerHTML = '';
-                losersTable.innerHTML = '';
-    
-                // Populate Top Movers table
-                topMovers.forEach(stock => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${stock.symbol}</td>
-                        <td>$${stock.close.toFixed(2)}</td>
-                        <td class="price-up">+${stock.change.toFixed(2)}%</td>
-                    `;
-                    moversTable.appendChild(row);
-                });
-    
-                // Populate Top Losers table
-                topLosers.forEach(stock => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${stock.symbol}</td>
-                        <td>$${stock.close.toFixed(2)}</td>
-                        <td class="price-down">${stock.change.toFixed(2)}%</td>
-                    `;
-                    losersTable.appendChild(row);
-                });
-            } catch (error) {
-                console.error('Error fetching stock data:', error);
+            } else {
+                console.error('Chart element not found.');
             }
-        }
-    
-        document.addEventListener('DOMContentLoaded', fetchStockData); // Ensure the function runs only once
+        });
     </script>
 </body>
 </html>
