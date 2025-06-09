@@ -7,18 +7,6 @@
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/trading.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        /* Ensure the chart takes up the entire section */
-        .trading-chart {
-            width: 100%;
-            height: 400px; /* Adjust height as needed */
-        }
-
-        #moversChart {
-            width: 100% !important;
-            height: 100% !important;
-        }
-    </style>
 </head>
 <body>
     <header>
@@ -33,7 +21,6 @@
         </nav>
     </header>
 
-    <!-- Added Header Components -->
     <div class="portfolio-summary">
         <div class="summary-card">
             <h3>Portfolio Value</h3>
@@ -66,34 +53,7 @@
                             <th>Change (%)</th>
                         </tr>
                     </thead>
-                    <tbody id="moversTable">
-                        <!-- Placeholder data -->
-                        <tr>
-                            <td>AAPL</td>
-                            <td>$150.25</td>
-                            <td class="price-up">+5.2%</td>
-                        </tr>
-                        <tr>
-                            <td>GOOGL</td>
-                            <td>$2,950.00</td>
-                            <td class="price-up">+4.8%</td>
-                        </tr>
-                        <tr>
-                            <td>MSFT</td>
-                            <td>$310.00</td>
-                            <td class="price-up">+3.5%</td>
-                        </tr>
-                        <tr>
-                            <td>TSLA</td>
-                            <td>$700.00</td>
-                            <td class="price-up">+3.2%</td>
-                        </tr>
-                        <tr>
-                            <td>AMZN</td>
-                            <td>$3,150.00</td>
-                            <td class="price-up">+2.9%</td>
-                        </tr>
-                    </tbody>
+                    <tbody id="moversTable"></tbody>
                 </table>
             </div>
 
@@ -107,34 +67,7 @@
                             <th>Change (%)</th>
                         </tr>
                     </thead>
-                    <tbody id="losersTable">
-                        <!-- Placeholder data -->
-                        <tr>
-                            <td>FB</td>
-                            <td>$250.00</td>
-                            <td class="price-down">-3.5%</td>
-                        </tr>
-                        <tr>
-                            <td>NVDA</td>
-                            <td>$400.00</td>
-                            <td class="price-down">-2.8%</td>
-                        </tr>
-                        <tr>
-                            <td>ORCL</td>
-                            <td>$90.00</td>
-                            <td class="price-down">-2.5%</td>
-                        </tr>
-                        <tr>
-                            <td>IBM</td>
-                            <td>$130.00</td>
-                            <td class="price-down">-2.2%</td>
-                        </tr>
-                        <tr>
-                            <td>INTC</td>
-                            <td>$50.00</td>
-                            <td class="price-down">-1.9%</td>
-                        </tr>
-                    </tbody>
+                    <tbody id="losersTable"></tbody>
                 </table>
             </div>
         </div>
@@ -146,22 +79,83 @@
 
     <script>
         async function fetchStockData() {
-            const url = `https://financialmodelingprep.com/stable/stock_market/actives?apikey=q6hgDThWmTlI5CbyyeB1Q5DLm3VNThCB`;
+            const apiKey = '2a8fbbbc35a749d9930a3c43ff553bc0';
+            const symbols = ['AAPL', 'GOOGL', 'MSFT', 'TSLA', 'AMZN', 'NFLX', 'V', 'AAPL']; // Removed FB
+            const url = `https://api.twelvedata.com/time_series?symbol=${symbols.join(',')}&interval=1day&apikey=${apiKey}`;
+    
             try {
+                console.log(`Fetching data for symbols: ${symbols.join(',')}`);
                 const response = await fetch(url);
+                if (response.status === 429) {
+                    console.warn('Rate limit exceeded. Waiting for 60 seconds...');
+                    await new Promise(resolve => setTimeout(resolve, 60000)); // Wait 60 seconds
+                    return fetchStockData(); // Retry the request
+                }
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 const data = await response.json();
     
-                // Extract top 5 movers and top 5 losers
-                const topMovers = data.slice(0, 5); // Top 5 movers
-                const topLosers = data.slice(-5); // Top 5 losers
+                console.log('API Response:', data);
+    
+                if (!data || Object.keys(data).length === 0) {
+                    console.warn('No data available from the API.');
+                    document.getElementById('moversTable').innerHTML = '<tr><td colspan="3">No data available</td></tr>';
+                    document.getElementById('losersTable').innerHTML = '<tr><td colspan="3">No data available</td></tr>';
+                    return;
+                }
+    
+                // Process the data
+                const stocks = Object.keys(data).map(symbol => {
+                    const stockData = data[symbol];
+                    if (!stockData || stockData.status !== "ok") {
+                        console.warn(`Invalid or missing data for symbol: ${symbol}`, stockData);
+                        return null;
+                    }
+                    if (!stockData.values || stockData.values.length < 2) {
+                        console.warn(`Not enough data for symbol: ${symbol}`);
+                        return null;
+                    }
+                    const latestClose = parseFloat(stockData.values[0].close);
+                    const previousClose = parseFloat(stockData.values[1].close);
+                    if (isNaN(latestClose) || isNaN(previousClose)) {
+                        console.warn(`Invalid close prices for symbol: ${symbol}`);
+                        return null;
+                    }
+                    const change = ((latestClose - previousClose) / previousClose) * 100;
+                    return {
+                        symbol,
+                        close: latestClose,
+                        change
+                    };
+                }).filter(stock => stock !== null);
+    
+                if (stocks.length === 0) {
+                    console.warn('No valid stock data after processing.');
+                    document.getElementById('moversTable').innerHTML = '<tr><td colspan="3">No data available</td></tr>';
+                    document.getElementById('losersTable').innerHTML = '<tr><td colspan="3">No data available</td></tr>';
+                    return;
+                }
+    
+                // Separate stocks into gainers and losers
+                const gainers = stocks.filter(stock => stock.change > 0).sort((a, b) => b.change - a.change);
+                const losers = stocks.filter(stock => stock.change < 0).sort((a, b) => a.change - b.change);
+    
+                const topMovers = gainers.slice(0, 5);
+                const topLosers = losers.slice(0, 5);
+    
+                console.log('Top Movers:', topMovers);
+                console.log('Top Losers:', topLosers);
     
                 // Update the chart
-                const labels = topMovers.map(stock => stock.ticker);
-                const moversData = topMovers.map(stock => parseFloat(stock.price));
-                const losersData = topLosers.map(stock => parseFloat(stock.price));
+                const labels = [...topMovers.map(stock => stock.symbol), ...topLosers.map(stock => stock.symbol)];
+                const moversData = topMovers.map(stock => stock.change);
+                const losersData = topLosers.map(stock => stock.change);
+    
+                // Debugging chart data
+                console.log('Chart Labels:', labels);
+                console.log('Movers Data:', moversData);
+                console.log('Losers Data:', losersData);
     
                 const chartData = {
                     labels: labels,
@@ -183,7 +177,12 @@
                     ]
                 };
     
-                const config = {
+                const ctx = document.getElementById('moversChart');
+                if (!ctx) {
+                    console.error('Chart element not found.');
+                    return;
+                }
+                new Chart(ctx.getContext('2d'), {
                     type: 'bar',
                     data: chartData,
                     options: {
@@ -203,16 +202,12 @@
                             }
                         }
                     }
-                };
-    
-                const ctx = document.getElementById('moversChart').getContext('2d');
-                new Chart(ctx, config);
+                });
     
                 // Update the tables
                 const moversTable = document.getElementById('moversTable');
                 const losersTable = document.getElementById('losersTable');
     
-                // Clear existing table rows
                 moversTable.innerHTML = '';
                 losersTable.innerHTML = '';
     
@@ -220,9 +215,9 @@
                 topMovers.forEach(stock => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td>${stock.ticker}</td>
-                        <td>$${parseFloat(stock.price).toFixed(2)}</td>
-                        <td class="price-up">+${(Math.random() * 5).toFixed(2)}%</td>
+                        <td>${stock.symbol}</td>
+                        <td>$${stock.close.toFixed(2)}</td>
+                        <td class="price-up">+${stock.change.toFixed(2)}%</td>
                     `;
                     moversTable.appendChild(row);
                 });
@@ -231,9 +226,9 @@
                 topLosers.forEach(stock => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td>${stock.ticker}</td>
-                        <td>$${parseFloat(stock.price).toFixed(2)}</td>
-                        <td class="price-down">-${(Math.random() * 5).toFixed(2)}%</td>
+                        <td>${stock.symbol}</td>
+                        <td>$${stock.close.toFixed(2)}</td>
+                        <td class="price-down">${stock.change.toFixed(2)}%</td>
                     `;
                     losersTable.appendChild(row);
                 });
@@ -242,8 +237,7 @@
             }
         }
     
-        // Call the function to fetch data and update the UI
-        fetchStockData();
+        document.addEventListener('DOMContentLoaded', fetchStockData); // Ensure the function runs only once
     </script>
 </body>
 </html>
