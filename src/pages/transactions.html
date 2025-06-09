@@ -3,30 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transactions - Stock Trading App</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/trading.css">
-    <title>Transaction History</title>
 </head>
 <body>
     <header>
         <h1>Transaction History</h1>
+        <nav>
+            <ul>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="portfolio.html">Portfolio</a></li>
+                <li><a href="stocks.html">Stocks</a></li>
+                <li><a href="transactions.html">Transactions</a></li>
+            </ul>
+        </nav>
     </header>
-    <main>
-        <table id="transaction-table">
+
+    <div class="container">
+        <div class="portfolio-summary">
+            <div class="summary-card">
+                <h3>Total Trades</h3>
+                <div class="value">24</div>
+            </div>
+            <div class="summary-card">
+                <h3>Buy Orders</h3>
+                <div class="value">15</div>
+            </div>
+            <div class="summary-card">
+                <h3>Sell Orders</h3>
+                <div class="value">9</div>
+            </div>
+        </div>
+
+        <table class="table">
             <thead>
                 <tr>
                     <th>Date</th>
+                    <th>Type</th>
                     <th>Stock</th>
-                    <th>Action</th>
-                    <th>Quantity</th>
+                    <th>Shares</th>
                     <th>Price</th>
+                    <th>Total</th>
                 </tr>
             </thead>
             <tbody>
-                <!-- Transaction records will be populated here -->
+                <tr>
+                    <td>2025-06-09</td>
+                    <td>Buy</td>
+                    <td>AAPL</td>
+                    <td>10</td>
+                    <td>$150.25</td>
+                    <td>$1,502.50</td>
+                </tr>
+                <!-- More transactions will be added dynamically -->
             </tbody>
         </table>
-    </main>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Stock Trading App</p>
+    </footer>
+
+    <script src="../assets/js/api.js"></script>
     <script src="../assets/js/transactions.js"></script>
 </body>
 </html>

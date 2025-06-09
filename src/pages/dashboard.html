@@ -3,37 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Dashboard - Stock Trading App</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/trading.css">
 </head>
 <body>
     <header>
         <h1>Stock Trading Dashboard</h1>
+        <nav>
+            <ul>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="portfolio.html">Portfolio</a></li>
+                <li><a href="stocks.html">Stocks</a></li>
+                <li><a href="transactions.html">Transactions</a></li>
+            </ul>
+        </nav>
     </header>
-    <main>
-        <section id="portfolio-overview">
-            <h2>Your Portfolio</h2>
-            <div id="portfolio-summary">
-                <!-- Portfolio summary will be displayed here -->
+
+    <div class="container">
+        <div class="portfolio-summary">
+            <div class="summary-card">
+                <h3>Portfolio Value</h3>
+                <div class="value">$10,000</div>
             </div>
-        </section>
-        <section id="market-data">
-            <h2>Market Data</h2>
-            <div id="stock-prices">
-                <!-- Stock prices will be displayed here -->
+            <div class="summary-card">
+                <h3>Today's Change</h3>
+                <div class="value price-up">+$150</div>
             </div>
-        </section>
-        <section id="recent-transactions">
-            <h2>Recent Transactions</h2>
-            <div id="transactions-list">
-                <!-- Recent transactions will be displayed here -->
+            <div class="summary-card">
+                <h3>Available Cash</h3>
+                <div class="value">$5,000</div>
             </div>
-        </section>
-    </main>
+        </div>
+
+        <div class="trading-chart">
+            <!-- Chart will be inserted here via JavaScript -->
+        </div>
+
+        <div class="stock-card">
+            <div class="stock-info">
+                <h3>AAPL</h3>
+                <div class="stock-price price-up">$150.25</div>
+                <p>Apple Inc.</p>
+                <button class="trade-button buy">Buy</button>
+                <button class="trade-button sell">Sell</button>
+            </div>
+            <!-- More stock cards -->
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Stock Trading App</p>
+    </footer>
+    
     <script src="../assets/js/api.js"></script>
     <script src="../assets/js/portfolio.js"></script>
     <script src="../assets/js/stocks.js"></script>
-    <script src="../assets/js/transactions.js"></script>
 </body>
 </html>
