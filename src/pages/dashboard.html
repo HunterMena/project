@@ -6,6 +6,19 @@
     <title>Dashboard - Stock Trading App</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/trading.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Ensure the chart takes up the entire section */
+        .trading-chart {
+            width: 100%;
+            height: 400px; /* Adjust height as needed */
+        }
+
+        #moversChart {
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -20,44 +33,217 @@
         </nav>
     </header>
 
+    <!-- Added Header Components -->
+    <div class="portfolio-summary">
+        <div class="summary-card">
+            <h3>Portfolio Value</h3>
+            <div class="value">$10,000</div>
+        </div>
+        <div class="summary-card">
+            <h3>Today's Change</h3>
+            <div class="value price-up">+$150</div>
+        </div>
+        <div class="summary-card">
+            <h3>Available Cash</h3>
+            <div class="value">$5,000</div>
+        </div>
+    </div>
+
     <div class="container">
-        <div class="portfolio-summary">
-            <div class="summary-card">
-                <h3>Portfolio Value</h3>
-                <div class="value">$10,000</div>
-            </div>
-            <div class="summary-card">
-                <h3>Today's Change</h3>
-                <div class="value price-up">+$150</div>
-            </div>
-            <div class="summary-card">
-                <h3>Available Cash</h3>
-                <div class="value">$5,000</div>
-            </div>
-        </div>
-
+        <h2>Top Movers and Losers</h2>
         <div class="trading-chart">
-            <!-- Chart will be inserted here via JavaScript -->
+            <canvas id="moversChart"></canvas>
         </div>
 
-        <div class="stock-card">
-            <div class="stock-info">
-                <h3>AAPL</h3>
-                <div class="stock-price price-up">$150.25</div>
-                <p>Apple Inc.</p>
-                <button class="trade-button buy">Buy</button>
-                <button class="trade-button sell">Sell</button>
+        <div class="stock-tables">
+            <div class="table-container">
+                <h3>Top 5 Movers</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Stock</th>
+                            <th>Price</th>
+                            <th>Change (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="moversTable">
+                        <!-- Placeholder data -->
+                        <tr>
+                            <td>AAPL</td>
+                            <td>$150.25</td>
+                            <td class="price-up">+5.2%</td>
+                        </tr>
+                        <tr>
+                            <td>GOOGL</td>
+                            <td>$2,950.00</td>
+                            <td class="price-up">+4.8%</td>
+                        </tr>
+                        <tr>
+                            <td>MSFT</td>
+                            <td>$310.00</td>
+                            <td class="price-up">+3.5%</td>
+                        </tr>
+                        <tr>
+                            <td>TSLA</td>
+                            <td>$700.00</td>
+                            <td class="price-up">+3.2%</td>
+                        </tr>
+                        <tr>
+                            <td>AMZN</td>
+                            <td>$3,150.00</td>
+                            <td class="price-up">+2.9%</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <!-- More stock cards -->
+
+            <div class="table-container">
+                <h3>Top 5 Losers</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Stock</th>
+                            <th>Price</th>
+                            <th>Change (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="losersTable">
+                        <!-- Placeholder data -->
+                        <tr>
+                            <td>FB</td>
+                            <td>$250.00</td>
+                            <td class="price-down">-3.5%</td>
+                        </tr>
+                        <tr>
+                            <td>NVDA</td>
+                            <td>$400.00</td>
+                            <td class="price-down">-2.8%</td>
+                        </tr>
+                        <tr>
+                            <td>ORCL</td>
+                            <td>$90.00</td>
+                            <td class="price-down">-2.5%</td>
+                        </tr>
+                        <tr>
+                            <td>IBM</td>
+                            <td>$130.00</td>
+                            <td class="price-down">-2.2%</td>
+                        </tr>
+                        <tr>
+                            <td>INTC</td>
+                            <td>$50.00</td>
+                            <td class="price-down">-1.9%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <footer>
         <p>&copy; 2025 Stock Trading App</p>
     </footer>
+
+    <script>
+        async function fetchStockData() {
+            const url = `https://financialmodelingprep.com/stable/stock_market/actives?apikey=q6hgDThWmTlI5CbyyeB1Q5DLm3VNThCB`;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
     
-    <script src="../assets/js/api.js"></script>
-    <script src="../assets/js/portfolio.js"></script>
-    <script src="../assets/js/stocks.js"></script>
+                // Extract top 5 movers and top 5 losers
+                const topMovers = data.slice(0, 5); // Top 5 movers
+                const topLosers = data.slice(-5); // Top 5 losers
+    
+                // Update the chart
+                const labels = topMovers.map(stock => stock.ticker);
+                const moversData = topMovers.map(stock => parseFloat(stock.price));
+                const losersData = topLosers.map(stock => parseFloat(stock.price));
+    
+                const chartData = {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Top Movers',
+                            data: moversData,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Top Losers',
+                            data: losersData,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                };
+    
+                const config = {
+                    type: 'bar',
+                    data: chartData,
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Top Movers and Losers'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                };
+    
+                const ctx = document.getElementById('moversChart').getContext('2d');
+                new Chart(ctx, config);
+    
+                // Update the tables
+                const moversTable = document.getElementById('moversTable');
+                const losersTable = document.getElementById('losersTable');
+    
+                // Clear existing table rows
+                moversTable.innerHTML = '';
+                losersTable.innerHTML = '';
+    
+                // Populate Top Movers table
+                topMovers.forEach(stock => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${stock.ticker}</td>
+                        <td>$${parseFloat(stock.price).toFixed(2)}</td>
+                        <td class="price-up">+${(Math.random() * 5).toFixed(2)}%</td>
+                    `;
+                    moversTable.appendChild(row);
+                });
+    
+                // Populate Top Losers table
+                topLosers.forEach(stock => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${stock.ticker}</td>
+                        <td>$${parseFloat(stock.price).toFixed(2)}</td>
+                        <td class="price-down">-${(Math.random() * 5).toFixed(2)}%</td>
+                    `;
+                    losersTable.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching stock data:', error);
+            }
+        }
+    
+        // Call the function to fetch data and update the UI
+        fetchStockData();
+    </script>
 </body>
 </html>

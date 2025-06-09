@@ -125,3 +125,19 @@ footer {
     padding: 1.5rem 0;
     margin-top: 2rem;
 }
+
+.trading-chart {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: auto; /* Remove fixed height to prevent stretching */
+    padding: 2rem 0; /* Add padding for spacing */
+}
+
+#moversChart {
+    max-width: 600px; /* Set a maximum width for the chart */
+    max-height: 400px; /* Set a maximum height for the chart */
+    width: 100%; /* Ensure it scales responsively */
+    height: auto; /* Maintain aspect ratio */
+}
