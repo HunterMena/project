@@ -91,138 +91,144 @@ const tradingChart = new Chart(ctx, {
     }
 });
 
-// Placeholder for fetching data from Alpha Vantage API
-async function fetchStockData() {
-    const apiKey = 'YOUR_ALPHA_VANTAGE_API_KEY';
-    const symbol = 'AAPL'; // Example stock symbol
-    const url = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${symbol}&interval=1min&apikey=${apiKey}`;
-
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-        console.log(data); // Inspect the data structure
-        // Process and update the chart with new data here
-    } catch (error) {
-        console.error('Error fetching stock data:', error);
-    }
-}
-
 // Call the fetch function (you can expand this to fetch multiple stocks)
 fetchStockData();
 
 document.addEventListener('DOMContentLoaded', () => {
-    const apiKey = 'q6hgDThWmTlI5CbyyeB1Q5DLm3VNThCB'; // Replace with your actual API key
-    const stockSymbols = ['AAPL', 'GOOGL', 'AMZN', 'MSFT']; // Stocks to fetch
-    const stockData = []; // Array to store fetched stock data
-
-    // Function to fetch stock data from the API
-    async function fetchStockData(symbol) {
-        const url = `https://financialmodelingprep.com/stable/search-symbol?query=${symbol}&apikey=${apiKey}`;
-        try {
-            const response = await fetch(url);
-            const data = await response.json();
-            const price = parseFloat(data['Global Quote']['05. price']);
-            return { symbol, price };
-        } catch (error) {
-            console.error(`Error fetching data for ${symbol}:`, error);
-            return { symbol, price: null }; // Return null price on error
-        }
-    }
-
-    // Function to update the chart
-    function updateChart(chart, labels, prices) {
-        chart.data.labels = labels; // Update labels (stock symbols)
-        chart.data.datasets[0].data = prices; // Update data (stock prices)
-        chart.update(); // Refresh the chart
-    }
-
-    // Initialize the Chart.js graph
-    const ctx = document.getElementById('testChart').getContext('2d');
-    const chart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: [], // Placeholder for stock symbols
-            datasets: [{
-                label: 'Stock Prices ($)',
-                data: [], // Placeholder for stock prices
-                backgroundColor: [
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(153, 102, 255, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(153, 102, 255, 1)'
-                ],
-                borderWidth: 1
-            }]
+    // Dummy stock data
+    const dummyStocks = [
+        {
+            symbol: 'AAPL',
+            shares: 15,
+            avgPrice: 145.00,
+            currentPrice: 150.25,
+            profitLoss: (150.25 - 145.00) * 15
         },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                title: {
-                    display: true,
-                    text: 'Portfolio Stock Prices'
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
+        {
+            symbol: 'GOOGL',
+            shares: 10,
+            avgPrice: 2800.00,
+            currentPrice: 2900.00,
+            profitLoss: (2900.00 - 2800.00) * 10
+        },
+        {
+            symbol: 'AMZN',
+            shares: 8,
+            avgPrice: 3200.00,
+            currentPrice: 3150.00,
+            profitLoss: (3150.00 - 3200.00) * 8
+        },
+        {
+            symbol: 'MSFT',
+            shares: 20,
+            avgPrice: 300.00,
+            currentPrice: 310.00,
+            profitLoss: (310.00 - 300.00) * 20
         }
-    });
+    ];
 
-    // Fetch data for all stocks and update the chart
-    async function loadStockData() {
-        const promises = stockSymbols.map(symbol => fetchStockData(symbol));
-        const results = await Promise.all(promises);
-
-        // Filter out stocks with null prices (in case of API errors)
-        const validStocks = results.filter(stock => stock.price !== null);
-
-        // Extract labels (symbols) and data (prices) for the chart
-        const labels = validStocks.map(stock => stock.symbol);
-        const prices = validStocks.map(stock => stock.price);
-
-        // Update the chart with the fetched data
-        updateChart(chart, labels, prices);
+    // Function to update the portfolio summary
+    function updatePortfolioSummary(totalValue) {
+        const summaryContainer = document.getElementById('portfolio-summary-text');
+        summaryContainer.innerHTML = `<p>Total Portfolio Value: $${totalValue.toFixed(2)}</p>`;
     }
 
-    // Load stock data on page load
-    loadStockData();
+    // Function to update the holdings table
+    function updateHoldingsTable(stocks) {
+        const tableBody = document.getElementById('holdings-table');
+        tableBody.innerHTML = ''; // Clear existing rows
 
-    // Select the table body containing the stock rows
-    const tableBody = document.querySelector('.table tbody');
+        stocks.forEach(stock => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${stock.symbol}</td>
+                <td>${stock.shares}</td>
+                <td>$${stock.avgPrice.toFixed(2)}</td>
+                <td>$${stock.currentPrice.toFixed(2)}</td>
+                <td class="${stock.profitLoss >= 0 ? 'price-up' : 'price-down'}">
+                    $${stock.profitLoss.toFixed(2)}
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
 
-    // Use event delegation to handle clicks on "Buy More" and "Sell" buttons
-    tableBody.addEventListener('click', (event) => {
-        const target = event.target;
+    // Function to display stock details under the chart
+    function displayStockDetails(stocks) {
+        const stockDetailsContainer = document.getElementById('stock-details-container');
+        stockDetailsContainer.innerHTML = ''; // Clear existing content
 
-        // Check if the clicked element is a "Buy More" or "Sell" button
-        if (target.classList.contains('buy') || target.classList.contains('sell')) {
-            // Find the row containing the clicked button
-            const row = target.closest('tr');
-            const sharesCell = row.querySelector('td:nth-child(2)'); // Shares column
-            let shares = parseInt(sharesCell.textContent, 10);
+        stocks.forEach(stock => {
+            const stockElement = document.createElement('div');
+            stockElement.className = 'stock-item';
+            stockElement.innerHTML = `
+                <h3>${stock.symbol}</h3>
+                <p>Shares: ${stock.shares}</p>
+                <p>Avg Price: $${stock.avgPrice.toFixed(2)}</p>
+                <p>Current Price: $${stock.currentPrice.toFixed(2)}</p>
+                <p class="${stock.profitLoss >= 0 ? 'price-up' : 'price-down'}">
+                    Profit/Loss: $${stock.profitLoss.toFixed(2)}
+                </p>
+            `;
+            stockDetailsContainer.appendChild(stockElement);
+        });
+    }
 
-            // Update the shares based on the button clicked
-            if (target.classList.contains('buy')) {
-                shares += 1; // Increment shares
-            } else if (target.classList.contains('sell')) {
-                shares = Math.max(0, shares - 1); // Decrement shares, but not below 0
+    // Function to create a line graph
+    function createLineGraph(labels, data) {
+        const ctx = document.getElementById('lineChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels, // Stock symbols
+                datasets: [{
+                    label: 'Stock Price Trends ($)',
+                    data: data, // Current prices
+                    fill: true,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Stock Price Trends (Line Graph)'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
             }
+        });
+    }
 
-            // Update the shares cell with the new value
-            sharesCell.textContent = shares;
-        }
+    // Main function to load and display portfolio data
+    function loadPortfolioData() {
+        // Calculate total portfolio value
+        const totalValue = dummyStocks.reduce((sum, stock) => sum + stock.currentPrice * stock.shares, 0);
 
-        console.log('Button clicked:', target.classList);
-    });
+        // Update the portfolio summary, holdings table, and graphs
+        updatePortfolioSummary(totalValue);
+        updateHoldingsTable(dummyStocks);
+
+        const labels = dummyStocks.map(stock => stock.symbol);
+        const prices = dummyStocks.map(stock => stock.currentPrice);
+
+        // Create the line graph
+        createLineGraph(labels, prices);
+
+        // Display stock details under the chart
+        displayStockDetails(dummyStocks);
+    }
+
+    // Load portfolio data on page load
+    loadPortfolioData();
 });
