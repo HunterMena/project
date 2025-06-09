@@ -5,7 +5,7 @@ async function fetchStockData() {
         return;
     }
 
-    const url = `https://financialmodelingprep.com/stable/search-symbol?query=${symbol}&apikey=q6hgDThWmTlI5CbyyeB1Q5DLm3VNThCB`;
+    const url = `https://api.twelvedata.com/time_series?symbol=${symbol}&interval=1min&apikey=2a8fbbbc35a749d9930a3c43ff553bc0`;
     try {
         const response = await fetch(url);
         if (!response.ok) {
@@ -13,17 +13,13 @@ async function fetchStockData() {
         }
         const data = await response.json();
 
-        // Extract the desired part of the response
-        const filteredData = data.find(item => item.symbol === symbol.toUpperCase());
-        if (filteredData) {
-            const displayData = {
-                symbol: filteredData.symbol,
-                name: filteredData.name,
-                currency: filteredData.currency,
-                exchangeFullName: filteredData.exchangeFullName,
-                exchange: filteredData.exchange
-            };
-            document.getElementById("json-data").innerHTML = JSON.stringify(displayData, null, 4).replace(/\n/g, "<br>");
+        // Check if the response contains valid data
+        if (data.values && data.values.length > 0) {
+            const latestEntry = data.values[0]; // Get the most recent entry
+            document.getElementById("json-data").innerHTML = `
+                <p>Current Open price for ${symbol}:</p>
+                <p>Datetime: ${latestEntry.datetime}, Open: ${latestEntry.open}</p>
+            `;
         } else {
             document.getElementById("json-data").innerHTML = `No data found for symbol: ${symbol}`;
         }
