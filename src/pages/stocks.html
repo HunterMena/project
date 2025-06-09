@@ -22,9 +22,10 @@
 
     <div class="container">
         <div class="stock-search">
-            <input type="text" placeholder="Search stocks..." class="search-input">
-            <button class="button">Search</button>
+            <input type="text" id="stock-symbol" placeholder="Enter stock symbol">
+            <button onclick="fetchStockData()">Search</button>
         </div>
+        <div id="json-data"></div>
 
         <div class="stock-card">
             <div class="stock-info">
